@@ -39,29 +39,33 @@ saveDataF1 <- function(start1=1950, end1=2012, opt2="season"){
 #All following functions manipulate and analyse obtained data (s - season,t - team, d - driver)
 
 #Plots the number of drivers from a specific nation over a time period
-driverNation <- function(nation="German", type="i", start=1950,end=2012){#i-individual, c-cumulative, w-wins
+driverNation <- function(nation="German", type="a", start=1950,end=2012){#i-individual, c-cumulative, w-wins, a-all
 	numPerYear = vector()
   total = 0;
 	wins <- vector()
 	num <- 0  
+
+  if(type=="a"){#Display all graphs at once
+    par(mfrow=c(3,1))
+  }
   
   #Clean up this part sometime
-  if(type=="i"){#Number of individual competitors from a nation per year
+  if(type=="i" || type=="a"){#Number of individual competitors from a nation per year
   	for(i in start:end){ #Redo with lapply
   		numPerYear[i-start+1] <- sum(read.csv(paste0(".\\Data\\driver",i,"F1.csv"))$Nationality==nation)
   	}
-  	scatter.smooth(start:end,numPerYear, xlab="Year", ylab=paste0(nation," Formula One Racing Drivers"), pch=19, type="h", col="#CC0000", family="gaussian") #Error when a nation that never participated is provided as input
+  	scatter.smooth(start:end,numPerYear, xaxs="r", yaxs="i", xlab="Year", ylab=paste0(nation," Formula One Racing Drivers"), pch=19, type="h", col="#CC0000", family="gaussian") #Error when a nation that never participated is provided as input
   	abline(h=seq(0,max(numPerYear),1), col="lightgray", lty=3)
   }
-  else if(type=="c"){#Cumulative number of competitors offered over all years by a nation
+  if(type=="c" || type=="a"){#Cumulative number of competitors offered over all years by a nation
     for(i in start:end){ #Redo with lapply
       total <- sum(read.csv(paste0(".\\Data\\driver",i,"F1.csv"))$Nationality==nation) + total
       numPerYear[i-start+1]  <- total    
     }
-    plot(start:end,numPerYear, xlab="Year", ylab=paste0(nation," Formula One Racing Drivers"), pch=19, type="l", col="#CC0000") #Error when a nation that never participated is provided as input
+    plot(start:end,numPerYear, xaxs="i", yaxs="i", xlab="Year", ylab=paste0(nation," Formula One Racing Drivers"), pch=19, type="l", col="#CC0000") #Error when a nation that never participated is provided as input
     abline(h=seq(0,total,5), v=seq(1950,2012,2), col="lightgray", lty=3)    
   }
-  else if(type=="w"){#Cumulative Drivers Champions victories by citizens of a nation
+  if(type=="w" || type=="a"){#Cumulative Drivers Champions victories by citizens of a nation
     for(i in start:end){
       if(read.csv(paste0(".\\Data\\driver",i,"F1.csv"))[1,3]==nation){
         num <- num+1
@@ -78,7 +82,7 @@ driverNation <- function(nation="German", type="i", start=1950,end=2012){#i-indi
 #Succint function names
 #Merge similar functions - Done for now
 #Clean up graphs for presentation
-  #Clean up grid for varying x/y lengths
+  #Clean up grid for varying x/y lengths(done)
 
 #Tweak LOESS fit in driverNationalityByYear
 #Plot all nations over graph in driverNationalityByYear
